@@ -1,0 +1,85 @@
+/ Project name: crtexecprog, source file name: crtexecsrc.cpp generating crtexecprog.exe
+// Run the following program at command prompt to execute cplus.exe.
+/* Illustrates the different versions of exec, including
+* _execl(), _execle(), _execlp(), _execlpe()
+* _execv(), _execve(), _execvp(), _execvpe()
+*
+* Although crtexecsrc.cpp can execute any program, you can verify how
+* the different versions handle arguments and environment by
+* compiling and specifying the sample program cplus.exe. See
+* "_spawn(), _wspawn() functions" for examples of the similar spawn functions.
+*/
+#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <process.h>
+ 
+/* Environment for exec?e */
+char *my_env[] =
+{
+// NAME=value
+"THIS=environment will be",
+"PASSED=to new process by",
+"the EXEC=functions",
+NULL
+};
+ 
+int main(int ac, char* av[])
+{
+// An array pointers to strings...
+char *args[4];
+ 
+// If command line arguments not properly supplied...
+if (ac != 3)
+{
+fprintf(stderr, "Usage: %s <program_name> <number>\n", av[0]);
+return 0;
+}
+ 
+// otherwise...
+/* Arguments for _execv? */
+args[0] = av[1];
+args[1] = "exec??";
+args[2] = "two";
+args[3] = NULL;
+switch(atoi(av[2]))
+{
+case 1:
+{
+_execl(av[1], av[1], "_execl", "two", NULL);
+printf("_execl(av[1], av[1], \"_execl\", \"two\", NULL)\n");
+}
+break;
+case 2:
+_execle(av[1], av[1], "_execle", "two", NULL, my_env);
+break;
+case 3:
+_execlp(av[1], av[1], "_execlp", "two", NULL);
+break;
+case 4:
+_execlpe(av[1], av[1], "_execlpe", "two", NULL, my_env);
+break;
+// ==========================================================
+case 5:
+_execv(av[1], args);
+break;
+case 6:
+_execve(av[1], args, my_env);
+break;
+case 7:
+_execvp(av[1], args);
+break;
+case 8:
+_execvpe(av[1], args, my_env);
+break;
+default:
+break;
+}
+/* This point is reached only if exec fails. */
+printf("\nProcess was not exec'ed, error if any: %d.", GetLastError());
+// exit peacefully...
+exit(0);
+}
+
+Obtained from: http://www.tenouk.com/cpluscodesnippet/crtexecfamilyexample.html
+
